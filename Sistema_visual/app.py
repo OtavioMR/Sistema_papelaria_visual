@@ -28,51 +28,48 @@ def menu_inicial_registro():
 
     #Funções:
 
-    #Esse código é usado para verificar se o que foi digitado pelo usuário está salvo no banco de dados:
-    
+
     def fazer_login():
+
         nome_de_login_usuario = text_usuario.get()
         senha_de_login_usuario = text_senha.get()
 
-        DataBaser.cursor.execute("""
-        SELECT * FROM Cadastro
-        WHERE (Nome = ? and Senha = ?)
-        """,(nome_de_login_usuario, senha_de_login_usuario))
-        print('Selecionou')
-        verificar_login = DataBaser.cursor.fetchone()
-        try:
-
-            if (nome_de_login_usuario in verificar_login and senha_de_login_usuario in verificar_login):
-                messagebox.showinfo(title='Login', message= 'Login confirmado!')
-                menu_inicial.destroy()
-                janela_pagina_de_compras()
-                
-
-        except:
-            messagebox.showinfo(title= 'Login', message= 'Conta não localizada')
-
-#--------------------------------------------------------------------------------------------------
-#--------------------------------------------------------------------------------------------------
-
-
         #Nesta parte eu verifico se o cadastro de funcionario está salvo no bando de dados
         # Se estiver salvo, quando o funcionario coloar o login de funcionario ele terá acesso a aba de gerenciamento
-        
-        DataBaser.cursor.execute("""
-        SELECT * FROM Cadastro
-        WHERE (Nome = ? and Senha = ?)
-        """,('funcionario', 'funcionario'))
-        print('Selecionou')
-        verificar_login = DataBaser.cursor.fetchone()
-        try:
 
-            if (nome_de_login_usuario in verificar_login and senha_de_login_usuario in verificar_login):
-                menu_inicial.destroy()
-                janela_funcionario()
-                
+        if  nome_de_login_usuario == 'funcionario' and senha_de_login_usuario == 'funcionario':
+            try:
+                    menu_inicial.destroy()
+                    janela_funcionario()  
 
-        except:
-            pass
+            except:
+                pass
+
+
+#--------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
+
+
+    #Esse código é usado para verificar se o que foi digitado pelo usuário está salvo no banco de dados:
+            
+        else:        
+
+            DataBaser.cursor.execute("""
+            SELECT * FROM Cadastro
+            WHERE (Nome = ? and Senha = ?)
+            """,(nome_de_login_usuario, senha_de_login_usuario))
+            print('Selecionou')
+            verificar_login = DataBaser.cursor.fetchone()
+            try:
+
+                if (nome_de_login_usuario in verificar_login and senha_de_login_usuario in verificar_login):
+                    messagebox.showinfo(title='Login', message= 'Login confirmado!')
+                    menu_inicial.destroy()
+                    janela_pagina_de_compras()
+                    
+
+            except:
+                messagebox.showinfo(title= 'Login', message= 'Conta não localizada')
 
 
 #--------------------------------------------------------------------------------------------------

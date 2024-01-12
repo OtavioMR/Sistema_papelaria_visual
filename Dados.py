@@ -13,7 +13,7 @@ def delete_tabela():
 def delete_linha():
     conn = sqlite3.connect('RegistroData.db')
     cursor = conn.cursor()
-    usuario_id_para_apagar = 1
+    usuario_id_para_apagar = #???#
     sql = f"DELETE FROM Cadastro WHERE id = {usuario_id_para_apagar}"
     try:
         cursor.execute(sql)
