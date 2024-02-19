@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
 import DataBaser
+from PIL import Image, ImageTk
+from tkinter import filedialog
 
 #Variável global:
 menu_inicial = ''
@@ -22,7 +24,7 @@ def menu_inicial_registro():
     menu_inicial.geometry('500x250+200+200')
     menu_inicial.maxsize(500,500)
     menu_inicial.resizable(True,True)
-    menu_inicial.iconbitmap('Sistema_visual\Imagens\_123034.ico')
+    menu_inicial.iconbitmap('Sistema_visual/Imagens/_123034.ico')
     menu_inicial['bg'] = '#00ffee'
 
 
@@ -30,7 +32,7 @@ def menu_inicial_registro():
 
 
     def fazer_login():
-
+        
         nome_de_login_usuario = text_usuario.get()
         senha_de_login_usuario = text_senha.get()
 
@@ -109,7 +111,8 @@ def menu_inicial_registro():
 #------------------------JANELA DE LOGIN FUNCIONÁRIO--------------------------
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
-    
+
+global caminho_arquivo 
 
 def janela_funcionario():
     login_funcionario = Tk()
@@ -119,14 +122,118 @@ def janela_funcionario():
     login_funcionario.resizable(True,True)
     login_funcionario['bg'] = '#00ffee'
 
+
     #Funções:
+
+
+    def abrir_imagem():
+    
+        global caminho_arquivo
+        caminho_arquivo = filedialog.askopenfilename(initialdir="/", title="Selecione a imagem",
+                                                     filetypes =(("Aquivos de imagem", "*.png;* .jpg;* .gif;* .bmp;* .ppm;* .pgm"),
+                                                                 ("Todos os arquivos", "*.*")))
+        
+        if caminho_arquivo:
+            imagem_original = Image.open(caminho_arquivo)
+            # Redimensionar a imagem (substitua altura e largura pelos valores desejados)
+            altura = 120
+            largura = 120
+            imagem_redimensionada = imagem_original.resize((largura, altura))
+            imagem = ImageTk.PhotoImage(imagem_redimensionada)
+            label_imagem.config(image=imagem)
+            label_imagem.etiqueta = imagem #Referenciando a imagem
+           
+    global label_imagem
+
+    def voltar_menu_inicial():
+        login_funcionario.destroy()
+        menu_inicial_registro()
+
+
+    def RegistrarProdutos():
+        Nome_Produto = text_cadastro_produto.get()
+        Descricao_produto = text_descricao_produto.get()
+        Preco_produto = text_preco_cadastro_produto.get()
+        Quantidade_produto = text_quantidade_produto.get()
+
+        if caminho_arquivo:
+            with open(caminho_arquivo, 'rb') as file:
+                Imagem_data = file.read()
+          
+
+        else:
+            Imagem_data = None
+        
+        
+        if  (Nome_Produto == '' and Descricao_produto == '' and Descricao_produto == '' and Preco_produto == '' and Preco_produto == '' and Imagem_data == '' or
+            Nome_Produto == '' and Preco_produto == '' or
+            Nome_Produto == '' and Quantidade_produto == '' or
+            Nome_Produto == '' and Imagem_data == '' or
+            Descricao_produto == '' and Preco_produto == '' or
+            Descricao_produto == '' and Quantidade_produto == '' or
+            Descricao_produto == '' and Imagem_data == '' or
+            Preco_produto == '' and Quantidade_produto == '' or
+            Preco_produto == '' and Imagem_data == '' or
+            Imagem_data == '' or
+            Nome_Produto == '' or
+            Descricao_produto == '' or
+            Preco_produto == '' or
+            Imagem_data == ''
+            ):
+            messagebox.showerror(title= 'Cadastro', message= 'Preencha todos os campos do cadastro!')
+         
+
+        else:
+            DataBaser.cursor.execute("""
+            INSERT INTO CadastroEstoque(Nome, Descricao, Preco, Quantidade, Imagem) VALUES (?,?,?,?,?)
+            """, (Nome_Produto, Descricao_produto, Preco_produto, Quantidade_produto, Imagem_data))
+            DataBaser.conn.commit()
+            messagebox.showinfo(title='Cadastro', message= 'Produto Cadastrado!')
+
+            text_cadastro_produto.delete(0, 'end')
+            text_descricao_produto.delete(0, 'end')
+            text_preco_cadastro_produto.delete(0, 'end')
+            text_quantidade_produto.delete(0, 'end')
+            text_cadastro_produto.delete(0, 'end')
+            label_imagem.etiqueta = None
+            
     
 
     #Criar widgets:
-    botao_voltar_menu_inicial = Button(login_funcionario, text='Voltar para menu inicial')
+    nome_cadastro_produto = Label(login_funcionario, text='Nome do produto:', bg='#00ffee')
+    text_cadastro_produto = Entry(login_funcionario)
+    descricao_cadastro_produto = Label(login_funcionario, text='Descrição:', bg='#00ffee')
+    text_descricao_produto = Entry(login_funcionario)
+    preco_cadastro_produto = Label(login_funcionario, text='Preço:', bg='#00ffee')
+    text_preco_cadastro_produto = Entry(login_funcionario)
+    quantidade_cadastro_produto = Label(login_funcionario, text='Quantidade:', bg='#00ffee')
+    text_quantidade_produto = Entry(login_funcionario)
+    imagem_produto = Label(login_funcionario, text="Carregar imagem:", bg='#00ffee')
+    botao_abrir_imagem = Button(login_funcionario, command=abrir_imagem, text="Carregar")
+    moldura_imagem_cadastro = Label(login_funcionario, bg="white", padx=60, pady=50)
+    label_imagem = Label(login_funcionario)
+    botao_voltar_menu_inicial = Button(login_funcionario, text= 'Voltar',command= voltar_menu_inicial , bg = 'yellow', fg = 'blue', width=8)
+    botao_registrar_produtos = Button(login_funcionario, text='Registrar', command=RegistrarProdutos, bg = 'yellow', fg = 'blue', width=8)
+
 
     #Criar layout:
-    botao_voltar_menu_inicial.pack()
+
+    nome_cadastro_produto.grid(row=4, column=0, sticky=W, pady=5, )
+    text_cadastro_produto.grid(row=4, column=2, sticky=W, pady=5)
+    descricao_cadastro_produto.grid(row=5, column=0, sticky=W, pady=5)
+    text_descricao_produto.grid(row=5, column=2, sticky=W, pady=5)
+    preco_cadastro_produto.grid(row=7, column=0, sticky=W, pady=5)
+    text_preco_cadastro_produto.grid(row=7, column=2, sticky=W, pady=5)
+    quantidade_cadastro_produto.grid(row=8, column=0, sticky=W, pady=5)
+    text_quantidade_produto.grid(row=8, column=2, sticky=W, pady=5)
+    imagem_produto.grid(row=9, column=0, sticky=W, pady=5)
+    botao_abrir_imagem.grid(row=9, column=1, pady=5)
+    moldura_imagem_cadastro.place(x=350, y=10)
+    label_imagem.place(x=350, y=10)
+    botao_voltar_menu_inicial.place(x=50, y=180)
+    botao_registrar_produtos.place(x=150, y=180)
+
+
 
     login_funcionario.mainloop()
 
@@ -237,9 +344,9 @@ def janela_pagina_de_compras():
 
 
 
-menu_inicial_registro()
+#menu_inicial_registro()
 
-#janela_funcionario()
+janela_funcionario()
 
 #janela_cadastro()
 
